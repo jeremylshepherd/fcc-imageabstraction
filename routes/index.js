@@ -34,49 +34,57 @@ router.post('/api/newrecord', function(req, res) {
     });
 });
 
-// router.get('/api/:term', function(req, res) {
-//     var term = req.params.term;
-//     var obj = {};
-//     obj.term = term;
-//     var record = new Term(obj);
-//     record.save((err, record) => {if(err) {console.log(err);} console.log('Record saved.')});
+router.get('/api/imagesearch/:term', function(req, res) {
+    var term = req.params.term;
+     var skip = req.query.offset || 0;
+    var obj = {};
+    obj.term = term;
+    var record = new Term(obj);
+    record.save((err, record) => {if(err) {console.log(err);} console.log('Record saved.')});
     
-//     var search = new Search(process.env.BING_SECRET);
+    var search = new Search(process.env.BING_SECRET);
  
-//     search.images(
-//         'Tutta Bella Neapolitan Pizzeria',
-//         {top: 5},
-//         function(err, results) {
-//             if(err){console.log(err);}
-//             console.log(util.inspect(results, 
-//             {colors: true, depth: null}));
-//             res.json(results);
-//      });
-// });
+    search.images(
+        term,
+        {top: 10, skip: skip},
+        function(err, results) {
+            if(err){console.log(err);}
+            var arr = [];
+            for(var i = 0; i < results.length; i++){
+                var dat = {};
+                dat.url = results[i].url;
+                dat.alt = results[i].title;
+                dat.thumbnail = results[i].thumbnail.url;
+                dat.context = results[i].sourceUrl;
+                arr.push(dat);
+            }
+            res.json(arr);
+     });
+});
 
 router.get('/api/mocksearch', function(req, res) {
    var nu = genJSON(Mock);
    res.json(nu);
 });
 
-router.get('/noapi/:string/:offset', function(req, res) {
+router.get('/noapi/:string', function(req, res) {
+   console.log(process.env.BING_SECRET);
    var string = req.params.string;
-   var offset = req.params.offset || 0;
-   if(offset < 1){
-       res.json(string);
-   }else{
-       var obj = {};
-       obj.string = string;
-       obj.offset = offset;
-       res.json(obj);
-   }
+   var offset = req.query.offset || 0;
+   var obj = {};
+   obj.string = string;
+   obj.offset = offset;
+   res.json(obj);
 });
 
 router.get('/api/allterms', function(req, res) {
-    Term.find({}, function(err, results) {
-        if(err) {console.log(err);}
-        res.json(results);
-    })
+    Term.find({})
+        .sort({"date" : -1})
+        .limit(10)
+        .exec(function(err, results) {
+            if(err) {console.log(err);}
+            res.json(results);
+    });
 });
 
 
