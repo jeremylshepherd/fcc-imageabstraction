@@ -4,15 +4,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Term = require('../models/SearchTerms');
-var Seed = require('../mocks/seed');
-var Mock = require("../mocks/mockData");
 var Search = require('bing.search');
-var util = require('util');
-
-function genJSON(doc) {
-    return doc;
-}
-
 
 
 router.get('/', function(req, res) {
@@ -60,21 +52,6 @@ router.get('/api/imagesearch/:term', function(req, res) {
             }
             res.json(arr);
      });
-});
-
-router.get('/api/mocksearch', function(req, res) {
-   var nu = genJSON(Mock);
-   res.json(nu);
-});
-
-router.get('/noapi/:string', function(req, res) {
-   console.log(process.env.BING_SECRET);
-   var string = req.params.string;
-   var offset = req.query.offset || 0;
-   var obj = {};
-   obj.string = string;
-   obj.offset = offset;
-   res.json(obj);
 });
 
 router.get('/api/allterms', function(req, res) {
