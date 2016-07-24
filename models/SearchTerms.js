@@ -3,10 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var SearchTermsSchema = new Schema({
-  url: String,
-  snippet: String,
-  thumbnail: String,
-  context: String,
+  term: String,
   date:  Date
 });
 
